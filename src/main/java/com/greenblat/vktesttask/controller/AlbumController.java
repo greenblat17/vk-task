@@ -1,7 +1,7 @@
-package com.greenblat.vktesttask.album;
+package com.greenblat.vktesttask.controller;
 
-import com.greenblat.vktesttask.post.PostDto;
-import com.greenblat.vktesttask.post.PostService;
+import com.greenblat.vktesttask.dto.AlbumDto;
+import com.greenblat.vktesttask.service.AlbumService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

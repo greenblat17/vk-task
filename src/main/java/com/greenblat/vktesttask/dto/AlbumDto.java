@@ -1,4 +1,4 @@
-package com.greenblat.vktesttask.album;
+package com.greenblat.vktesttask.dto;
 
 public record AlbumDto(
         Long id,

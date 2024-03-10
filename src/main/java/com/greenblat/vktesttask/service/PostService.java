@@ -1,6 +1,6 @@
-package com.greenblat.vktesttask.post;
+package com.greenblat.vktesttask.service;
 
-import com.greenblat.vktesttask.post.PostDto;
+import com.greenblat.vktesttask.dto.PostDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;

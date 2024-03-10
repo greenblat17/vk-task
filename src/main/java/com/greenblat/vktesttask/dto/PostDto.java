@@ -1,4 +1,4 @@
-package com.greenblat.vktesttask.post;
+package com.greenblat.vktesttask.dto;
 
 public record PostDto(
         Long id,

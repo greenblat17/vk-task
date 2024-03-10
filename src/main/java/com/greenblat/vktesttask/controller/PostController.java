@@ -1,5 +1,7 @@
-package com.greenblat.vktesttask.post;
+package com.greenblat.vktesttask.controller;
 
+import com.greenblat.vktesttask.dto.PostDto;
+import com.greenblat.vktesttask.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -1,4 +1,4 @@
-package com.greenblat.vktesttask.user;
+package com.greenblat.vktesttask.dto;
 
 public record UserDto(
         Long id,
