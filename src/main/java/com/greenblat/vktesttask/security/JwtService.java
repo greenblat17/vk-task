@@ -1,10 +1,12 @@
 package com.greenblat.vktesttask.security;
 
+import com.greenblat.vktesttask.repository.TokenRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -16,12 +18,15 @@ import java.util.Map;
 import java.util.function.Function;
 
 @Service
+@RequiredArgsConstructor
 public class JwtService {
 
     @Value("${application.security.jwt.secret-key}")
     private String secretKey;
     @Value("${application.security.jwt.expiration}")
     private long jwtExpiration;
+
+    private final TokenRepository tokenRepository;
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -52,7 +57,13 @@ public class JwtService {
 
     public boolean isTokenValid(String token, UserDetails userDetails) {
         final String username = extractUsername(token);
-        return username.equals(userDetails.getUsername()) && !isTokenExpired(token);
+        return username.equals(userDetails.getUsername()) && !isTokenExpired(token) && isTokeValid(token);
+    }
+
+    private boolean isTokeValid(String token) {
+        return tokenRepository.findByToken(token)
+                .map(t -> !t.isExpired() && !t.isRevoked())
+                .orElse(false);
     }
 
     private boolean isTokenExpired(String token) {

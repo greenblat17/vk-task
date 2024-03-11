@@ -5,7 +5,10 @@ import com.greenblat.vktesttask.dto.auth.AuthResponse;
 import com.greenblat.vktesttask.dto.auth.RegisterRequest;
 import com.greenblat.vktesttask.exception.ResourceNotFoundException;
 import com.greenblat.vktesttask.mapper.UserMapper;
+import com.greenblat.vktesttask.model.Token;
+import com.greenblat.vktesttask.model.TokenType;
 import com.greenblat.vktesttask.model.User;
+import com.greenblat.vktesttask.repository.TokenRepository;
 import com.greenblat.vktesttask.repository.UserRepository;
 import com.greenblat.vktesttask.security.JwtService;
 import com.greenblat.vktesttask.security.UserDetailsImpl;
@@ -19,6 +22,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class AuthService {
 
+    private final TokenRepository tokenRepository;
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
@@ -27,8 +31,13 @@ public class AuthService {
 
     public AuthResponse registerUser(RegisterRequest request) {
         User user = userMapper.mapToUser(request, passwordEncoder.encode(request.password()));
-        userRepository.save(user);
-        return buildAuthResponseWithToken(user);
+
+        var savedUser = userRepository.save(user);
+        var authResponse = buildAuthResponseWithToken(savedUser);
+
+        saveUserToken(savedUser, authResponse.token());
+
+        return authResponse;
     }
 
     public AuthResponse authenticateUser(AuthRequest request) {
@@ -37,18 +46,51 @@ public class AuthService {
                 request.password()
         );
         authenticationManager.authenticate(authInputToken);
-        var user = userRepository.findByUsername(request.username())
+
+        var user = getUser(request.username());
+        var authResponse = buildAuthResponseWithToken(user);
+
+        revokeAllUserTokens(user);
+        saveUserToken(user, authResponse.token());
+
+        return authResponse;
+    }
+
+    private User getUser(String username) {
+        return userRepository.findByUsername(username)
                 .orElseThrow(() ->
                         new ResourceNotFoundException(
                                 "User with username [%s] not found"
-                                        .formatted(request.username())
+                                        .formatted(username)
                         ));
-        return buildAuthResponseWithToken(user);
     }
 
     private AuthResponse buildAuthResponseWithToken(User user) {
         var userDetails = new UserDetailsImpl(user);
         var jwtToken = jwtService.generateToken(userDetails);
         return new AuthResponse(jwtToken);
+    }
+
+    private void revokeAllUserTokens(User user) {
+        var validUserToken = tokenRepository.findAllValidTokensByUser(user.getId());
+        if (validUserToken.isEmpty()) {
+            return;
+        }
+        validUserToken.forEach(token -> {
+            token.setExpired(true);
+            token.setRevoked(true);
+        });
+        tokenRepository.saveAll(validUserToken);
+    }
+
+    private void saveUserToken(User user, String jwtToken) {
+        var token = Token.builder()
+                .user(user)
+                .token(jwtToken)
+                .tokenType(TokenType.BEARER)
+                .expired(false)
+                .revoked(false)
+                .build();
+        tokenRepository.save(token);
     }
 }
