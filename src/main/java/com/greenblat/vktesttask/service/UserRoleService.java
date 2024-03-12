@@ -9,9 +9,11 @@ import com.greenblat.vktesttask.repository.UserRepository;
 import com.greenblat.vktesttask.repository.UserRoleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class UserRoleService {
 
     private final UserRoleRepository userRoleRepository;
