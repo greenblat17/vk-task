@@ -1,5 +1,6 @@
 package com.greenblat.vktesttask.model;
 
+import com.greenblat.vktesttask.model.enums.TokenType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
