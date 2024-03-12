@@ -25,6 +25,8 @@ public class JwtService {
     private String secretKey;
     @Value("${application.security.jwt.expiration}")
     private long jwtExpiration;
+    @Value("${application.security.jwt.refresh-token.expiration}")
+    private long refreshExpiration;
 
     private final TokenRepository tokenRepository;
 
@@ -37,12 +39,18 @@ public class JwtService {
         return claimsResolver.apply(claims);
     }
 
+
     public String generateToken(UserDetails userDetails) {
         return generateToken(new HashMap<>(), userDetails);
     }
 
     public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
         return buildToken(extraClaims, userDetails, jwtExpiration);
+    }
+
+
+    public String generateRefreshToken(UserDetails userDetails) {
+        return buildToken(new HashMap<>(), userDetails, refreshExpiration);
     }
 
     private String buildToken(Map<String, Object> extraClaims, UserDetails userDetails, long expiration) {
@@ -57,10 +65,15 @@ public class JwtService {
 
     public boolean isTokenValid(String token, UserDetails userDetails) {
         final String username = extractUsername(token);
-        return username.equals(userDetails.getUsername()) && !isTokenExpired(token) && isTokeValid(token);
+        return username.equals(userDetails.getUsername()) && !isTokenExpired(token) && isTokeValidExists(token);
     }
 
-    private boolean isTokeValid(String token) {
+    public boolean isRefreshTokenValid(String token, UserDetails userDetails) {
+        final String username = extractUsername(token);
+        return username.equals(userDetails.getUsername()) && !isTokenExpired(token);
+    }
+
+    private boolean isTokeValidExists(String token) {
         return tokenRepository.findByToken(token)
                 .map(t -> !t.isExpired() && !t.isRevoked())
                 .orElse(false);
