@@ -4,6 +4,8 @@ import com.greenblat.vktesttask.dto.auth.AuthRequest;
 import com.greenblat.vktesttask.dto.auth.AuthResponse;
 import com.greenblat.vktesttask.dto.auth.RegisterRequest;
 import com.greenblat.vktesttask.service.AuthService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -27,5 +29,11 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> authenticate(@RequestBody @Validated AuthRequest registerRequest) {
         return ResponseEntity.ok(authService.authenticateUser(registerRequest));
+    }
+
+    @PostMapping("/refresh-token")
+    public void refreshToken(HttpServletRequest request,
+                             HttpServletResponse response) {
+        authService.refreshToken(request, response);
     }
 }
