@@ -8,8 +8,8 @@ import com.greenblat.vktesttask.exception.ObjectResponseException;
 import com.greenblat.vktesttask.exception.ResourceNotFoundException;
 import com.greenblat.vktesttask.mapper.UserMapper;
 import com.greenblat.vktesttask.model.Token;
-import com.greenblat.vktesttask.model.TokenType;
 import com.greenblat.vktesttask.model.User;
+import com.greenblat.vktesttask.model.enums.TokenType;
 import com.greenblat.vktesttask.repository.TokenRepository;
 import com.greenblat.vktesttask.repository.UserRepository;
 import com.greenblat.vktesttask.security.JwtService;
@@ -20,10 +20,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -38,10 +36,12 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+    private final UserRoleService userRoleService;
 
     public AuthResponse registerUser(RegisterRequest request) {
         User user = userMapper.mapToUser(request, passwordEncoder.encode(request.password()));
         var savedUser = userRepository.save(user);
+        userRoleService.saveUserRole(savedUser);
 
         var userDetails = convertToUserDetails(user);
         var jwtToken = jwtService.generateToken(userDetails);
@@ -140,4 +140,5 @@ public class AuthService {
                 .build();
         tokenRepository.save(token);
     }
+
 }
