@@ -20,6 +20,10 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 
+import static com.greenblat.vktesttask.model.enums.Permission.*;
+import static com.greenblat.vktesttask.model.enums.Role.*;
+import static org.springframework.http.HttpMethod.*;
+
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -34,9 +38,27 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(registry -> {
-                    registry.requestMatchers(
-                            "/api/v1/auth/**"
-                    ).permitAll();
+                    registry.requestMatchers("/api/v1/auth/**").permitAll();
+                    registry.requestMatchers("/api/v1/admin/**").hasRole(ADMIN.name());
+
+                    registry.requestMatchers("/api/v1/posts/**").hasAnyRole(ADMIN.name(), POSTS.name());
+                    registry.requestMatchers(GET, "/api/v1/posts/**").hasAnyAuthority(POST_READ.name(), ADMIN_READ.name());
+                    registry.requestMatchers(POST, "/api/v1/posts/**").hasAnyAuthority(POST_CREATE.name(), ADMIN_CREATE.name());
+                    registry.requestMatchers(PUT, "/api/v1/posts/**").hasAnyAuthority(POST_UPDATE.name(), ADMIN_UPDATE.name());
+                    registry.requestMatchers(DELETE, "/api/v1/posts/**").hasAnyAuthority(POST_DELETE.name(), ADMIN_DELETE.name());
+
+                    registry.requestMatchers("/api/v1/users/**").hasAnyRole(ADMIN.name(), USERS.name());
+                    registry.requestMatchers(GET, "/api/v1/users/**").hasAnyAuthority(USER_READ.name(), ADMIN_READ.name());
+                    registry.requestMatchers(POST, "/api/v1/users/**").hasAnyAuthority(USER_CREATE.name(), ADMIN_CREATE.name());
+                    registry.requestMatchers(PUT, "/api/v1/users/**").hasAnyAuthority(USER_UPDATE.name(), ADMIN_UPDATE.name());
+                    registry.requestMatchers(DELETE, "/api/v1/users/**").hasAnyAuthority(USER_DELETE.name(), ADMIN_DELETE.name());
+
+                    registry.requestMatchers("/api/v1/albums/**").hasAnyRole(ADMIN.name(), ALBUMS.name());
+                    registry.requestMatchers(GET, "/api/v1/albums/**").hasAnyAuthority(ALBUM_READ.name(), ADMIN_READ.name());
+                    registry.requestMatchers(POST, "/api/v1/albums/**").hasAnyAuthority(ALBUM_CREATE.name(), ADMIN_CREATE.name());
+                    registry.requestMatchers(PUT, "/api/v1/albums/**").hasAnyAuthority(ALBUM_UPDATE.name(), ADMIN_UPDATE.name());
+                    registry.requestMatchers(DELETE, "/api/v1/albums/**").hasAnyAuthority(ALBUM_DELETE.name(), ADMIN_DELETE.name());
+
                     registry.anyRequest().authenticated();
                 })
                 .sessionManagement(configurer -> configurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
