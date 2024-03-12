@@ -1,6 +1,9 @@
 package com.greenblat.vktesttask.dto.auth;
 
-public record RegisterRequest(String username,
-                              String email,
-                              String password) {
+import com.greenblat.vktesttask.validation.UniqueUsername;
+import jakarta.validation.constraints.NotBlank;
+
+@UniqueUsername
+public record RegisterRequest(@NotBlank String username,
+                              @NotBlank String password) {
 }
