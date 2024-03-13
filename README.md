@@ -18,11 +18,6 @@ The following items have been implemented:
 - PostgreSQL
 - Docker
 
-## Database
-
-<img alt="Diagram" src="docs/class-diagram.png">
-
-
 ## Environment Variables
 
 To run this project, you will need to add the following environment variables to your .env file
