@@ -3,33 +3,15 @@ services:
   db:
     image: 'postgres:latest'
     environment:
-      - 'POSTGRES_USER=${DB_USERNAME}'
-      - 'POSTGRES_PASSWORD=${DB_PASSWORD}'
-      - 'POSTGRES_DB=${DB_NAME}'
+      - 'POSTGRES_USER=root'
+      - 'POSTGRES_PASSWORD=root'
+      - 'POSTGRES_DB=storage'
     volumes:
       - ./src/main/resources/db-init:/docker-entrypoint-initdb.d
       - db-data:/var/lib/postgresql/data
     ports:
       - '5432:5432'
-    networks:
-      - app-network
-  app:
-    build:
-      context: .
-    container_name: vk-app
-    networks:
-      - app-network
-    depends_on:
-      - db
-    env_file:
-      - .env
-    ports:
-      - '8080:8080'
 
 volumes:
   db-data:
     driver: local
-
-networks:
-  app-network:
-    driver: bridge
