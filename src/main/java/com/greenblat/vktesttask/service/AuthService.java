@@ -63,7 +63,7 @@ public class AuthService {
         var user = getUser(request.username());
 
         var userDetails = convertToUserDetails(user);
-        var jwtToken = jwtService.generateRefreshToken(userDetails);
+        var jwtToken = jwtService.generateToken(userDetails);
         var refreshToken = jwtService.generateRefreshToken(userDetails);
 
         revokeAllUserTokens(user);
