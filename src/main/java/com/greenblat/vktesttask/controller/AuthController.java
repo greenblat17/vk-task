@@ -1,5 +1,6 @@
 package com.greenblat.vktesttask.controller;
 
+import com.greenblat.vktesttask.audit.Audit;
 import com.greenblat.vktesttask.dto.auth.AuthRequest;
 import com.greenblat.vktesttask.dto.auth.AuthResponse;
 import com.greenblat.vktesttask.dto.auth.RegisterRequest;
@@ -22,16 +23,19 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/register")
+    @Audit
     public ResponseEntity<AuthResponse> register(@RequestBody @Validated RegisterRequest registerRequest) {
         return ResponseEntity.ok(authService.registerUser(registerRequest));
     }
 
     @PostMapping("/login")
+    @Audit
     public ResponseEntity<AuthResponse> authenticate(@RequestBody @Validated AuthRequest registerRequest) {
         return ResponseEntity.ok(authService.authenticateUser(registerRequest));
     }
 
     @PostMapping("/refresh-token")
+    @Audit
     public void refreshToken(HttpServletRequest request,
                              HttpServletResponse response) {
         authService.refreshToken(request, response);

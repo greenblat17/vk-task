@@ -1,5 +1,6 @@
 package com.greenblat.vktesttask.controller;
 
+import com.greenblat.vktesttask.audit.Audit;
 import com.greenblat.vktesttask.model.enums.Role;
 import com.greenblat.vktesttask.service.UserRoleService;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +14,7 @@ public class AdminController {
     private final UserRoleService userRoleService;
 
     @PostMapping("/{userId}")
+    @Audit
     public void addRole(@RequestParam("role") Role role,
                         @PathVariable Long userId) {
         userRoleService.updateRole(userId, role);

@@ -14,7 +14,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class User extends AuditingEntity<Long> {
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
