@@ -20,7 +20,7 @@ The following items have been implemented:
 
 ## Database
 
-![Class diagram](docs/class-diagram.png)
+<img alt="Diagram" src="docs/class-diagram.png">
 
 
 ## Environment Variables
