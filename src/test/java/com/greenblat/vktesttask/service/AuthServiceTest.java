@@ -116,7 +116,7 @@ class AuthServiceTest {
 
 
     @Test
-    public void testRefreshTokenIfUserNotFound() throws Exception {
+    public void testRefreshTokenIfUserNotFound() {
         // Mock data
         String token = "invalidToken";
 
